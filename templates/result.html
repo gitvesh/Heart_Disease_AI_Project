@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Prediction Result</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            animation: slideIn 1s ease;
+            width: 90%;
+            max-width: 500px;
+        }
+        .high-risk {
+            color: red;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .low-risk {
+            color: green;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .precautions {
+            margin-top: 20px;
+            text-align: left;
+            background: #fff9e6;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        {% if prediction == 1 %}
+            <div class="high-risk">⚠️ High Risk of Heart Disease Detected!</div>
+            <p>Please consult a doctor immediately.</p>
+
+            <div class="precautions">
+                <h3>Precautions based on your data:</h3>
+                <ul>
+                    {% if form_data.age|float > 50 %}
+                        <li>Regular heart checkups are strongly recommended for age above 50.</li>
+                    {% endif %}
+                    {% if form_data.chol|float > 240 %}
+                        <li>Your cholesterol level is high. Avoid fatty and processed foods.</li>
+                    {% endif %}
+                    {% if form_data.trestbps|float > 140 %}
+                        <li>High blood pressure detected. Reduce salt intake and manage stress.</li>
+                    {% endif %}
+                    {% if form_data.fbs == '1' %}
+                        <li>High fasting blood sugar can contribute to heart issues. Monitor glucose regularly.</li>
+                    {% endif %}
+                    <li>Exercise regularly and maintain a healthy weight.</li>
+                    <li>Avoid smoking and limit alcohol consumption.</li>
+                    <li>Get at least 7-8 hours of sleep per night.</li>
+                </ul>
+            </div>
+
+        {% else %}
+            <div class="low-risk">✅ Low Risk of Heart Disease</div>
+            <p>Keep maintaining a healthy lifestyle!</p>
+        {% endif %}
+    </div>
+</body>
+</html>

@@ -7,17 +7,15 @@ app = Flask(__name__)
 
 model_path = "model/heart_disease_model.pkl"
 
-# ✅ Check if model file exists
+# ✅ Load the model
 if not os.path.exists(model_path):
     raise FileNotFoundError(f"Model file not found at {model_path}. Train and save the model first.")
 
-# ✅ Load Model
 with open(model_path, "rb") as model_file:
     model = joblib.load(model_file)
 
 @app.route("/", methods=["GET", "POST"])
 def home():
-    prediction = None
     if request.method == "POST":
         try:
             # Extract features from form
@@ -37,24 +35,24 @@ def home():
                 float(request.form["thal"]),
             ]
 
-            # Convert to NumPy array and reshape
             features = np.array(features).reshape(1, -1)
-            prediction = model.predict(features)[0]  # Predict
+            prediction = model.predict(features)[0]
+
+            # Redirect to result page
+            return render_template("result.html", prediction=prediction, form_data=request.form)
 
         except Exception as e:
-            prediction = f"Error: {str(e)}"
+            return render_template("result.html", prediction=f"Error: {str(e)}", form_data={})
 
-    return render_template("index.html", prediction=prediction)
+    return render_template("index.html")
 
 @app.route("/predict", methods=["POST"])
 def predict_api():
     try:
-        data = request.json  # Get input JSON
-        features = np.array(data["features"]).reshape(1, -1)  # Convert to NumPy array
-
+        data = request.json
+        features = np.array(data["features"]).reshape(1, -1)
         prediction = model.predict(features)
         return jsonify({"prediction": int(prediction[0])})
-
     except Exception as e:
         return jsonify({"error": str(e)})
 
